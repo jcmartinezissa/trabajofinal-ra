@@ -1,14 +1,16 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { View, Text } from 'react-native-web';
+import { View, Text, TouchableOpacity } from 'react-native-web';
 import { styles } from '../../../appStyles';
+import { sections } from '../../helper/sections';
 
 const Home = () => {
   return (
     <View style={styles.container}>
-    <Text>Proyecto en progreso!</Text>
-    <StatusBar style="auto" />
-  </View>
+      {sections.map(section => (
+      <TouchableOpacity style={styles.button} key={section.title}>
+        <Text style={{ fontSize: 20 }}> {section.title} </Text>
+      </TouchableOpacity>
+      ))}
+   </View>
   );
 };
 
