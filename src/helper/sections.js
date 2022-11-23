@@ -1,6 +1,6 @@
 export const sections = [{
   title: 'Cursos',
-  link: 'link para redireccionar a su correspondiente seccion...',
+  link: 'mis cursos disponibles',
 },
 {
   title: 'Beneficios',
