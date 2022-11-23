@@ -4,7 +4,6 @@ export const sections = [{
 },
 {
   title: 'Beneficios',
-  link: 'link para redireccionar a su correspondiente seccion...',
 },
 {
   title: 'Informacion',
