@@ -6,9 +6,9 @@ import { styles } from '../../../appStyles';
 const Home = () => {
   return (
     <View style={styles.container}>
-    <Text>Proyecto en progreso!</Text>
-    <StatusBar style="auto" />
-  </View>
+      <Text>Proyecto en progreso!</Text>
+      <StatusBar style="auto" />
+    </View>
   );
 };
 
