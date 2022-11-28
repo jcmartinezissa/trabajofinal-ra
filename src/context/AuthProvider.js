@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }) => {
   const loginAuthWithEmailAndPassword = async (email, password) => {
     try {
       console.log(email, password);
+      console.log(auth);
       let isEmailVerified = false;
       let user = {};
       await signInWithEmailAndPassword(auth, email, password)

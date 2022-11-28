@@ -23,7 +23,7 @@ const Login = ({ navigation }) => {
       if (response?.ok === true) {
         setMessages(response);
       } else {
-        setMessages(response?.error);
+        setMessages(response);
       }
     }
   };
@@ -42,8 +42,8 @@ const Login = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>¡Bienvenido!</Text>
-      <View style={styles.containerForm}>
+      <Text>¡Bienvenido!</Text>
+      <View>
         <Controller
           control={control}
           name='email'
@@ -70,7 +70,7 @@ const Login = ({ navigation }) => {
               onChangeText={onChange}
               value={value}
               placeholder='Contraseña'
-              autoComplete='false'
+              autoComplete='off'
             />
           )}
         />

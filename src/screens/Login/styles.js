@@ -6,13 +6,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 'x-large',
-    marginBottom: 20,
-  },
-  containerForm: {
-
-  },
   input: {
     height: 40,
     marginBottom: 12,
@@ -22,17 +15,12 @@ export const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     padding: 10,
   },
-  containerTitle: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-  },
   touchebleForgot: {
     display: 'flex',
     alignItems: 'flex-end',
   },
   forgot: {
-    fontSize: 'x-small',
+    fontSize: 9,
     marginTop: 5,
     marginBottom: 20,
   },
