@@ -1,22 +1,15 @@
-import { Text, TouchableOpacity, View } from 'react-native-web';
+import {
+  Image, Text, TouchableOpacity, View,
+} from 'react-native';
 import { styles } from '../../../appStyles';
 
-const CardData = () => {
+const CardData = ({ descripcion, beneficio }) => {
   return (
     <View style={styles.container}>
       <View>
         <TouchableOpacity style={styles.card}>
-          <Text>20% de descuento en tu proximo Cursado</Text>
-        </TouchableOpacity>
-      </View>
-      <View>
-      <TouchableOpacity style={styles.card}>
-        <Text>Unico 2x1 en cines</Text>
-      </TouchableOpacity>
-      </View>
-      <View>
-        <TouchableOpacity style={styles.card}>
-          <Text>Cervezas gratis en Patagonia</Text>
+          <Text>{beneficio}</Text>
+          <Text>{descripcion}</Text>
         </TouchableOpacity>
       </View>
     </View>
