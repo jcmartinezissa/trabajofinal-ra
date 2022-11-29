@@ -11,9 +11,10 @@ const App = () => {
   return (
     <AuthProvider>
       <NavigationContainer>
-          <Stack.Screen name="Login" component={Login} />
+        <Stack.Navigator initialRouteName="Login">
           <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Beneficios" component={Beneficios} />
+          <Stack.Screen name="Login" component={Login} />
+        </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>
   );
