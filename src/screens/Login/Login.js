@@ -29,7 +29,7 @@ const Login = ({ navigation }) => {
   };
 
   const open = () => {
-    // navigation.navigate('PageNotFount');
+    navigation.navigate('Register');
   };
 
   useEffect(() => {
@@ -77,7 +77,7 @@ const Login = ({ navigation }) => {
         {(errors?.password && errors?.password?.message)
           && <Text>{errors?.password?.message}</Text>}
         <TouchableHighlight style={styles.touchebleForgot} onPress={open}>
-          <Text style={styles.forgot}>Olvidaste tu contraseña</Text>
+          <Text style={styles.forgot}>Crear cuenta</Text>
         </TouchableHighlight>
         {messages.menssage !== '' && <Text>{messages.message}</Text>}
         <Button color='red' title='Continuar' onPress={handleSubmit(onSubmit)} />

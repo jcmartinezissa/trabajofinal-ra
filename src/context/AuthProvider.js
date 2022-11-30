@@ -3,27 +3,34 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification, signInWithEmailAndPassword, signOut,
 } from 'firebase/auth';
-import { auth } from '../services/firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../services/firebase';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [User, setUser] = useState();
+  const [currentUser, setCurrentUser] = useState();
 
-  const createAuthUserWithEmailAndPassword = async (email, password) => {
-    console.log(email, password);
+  const createAuthUserWithEmailAndPassword = async (email, password, phone, fullName) => {
+    console.log(email, password, phone, fullName);
     console.log(auth);
     try {
       await createUserWithEmailAndPassword(auth, email, password)
         .then(async (cred) => {
-          await sendEmailVerification(cred.user);
+          console.log(cred.user);
+          await sendEmailVerification(cred?.user);
+          await setDoc(doc, (db, 'usuarios', cred.user.uid), {
+            fullName,
+            email,
+            phoneNumber: phone,
+            rol: 'usuario',
+          });
         });
       return ({
         ok: true,
         message: 'Usuario registrado con exito. Valide su email para activar la cuenta.',
       });
     } catch (error) {
-      // validar si el usuario ya se registro
       return ({
         ok: false,
         message: 'Error al intentar registrar.',
@@ -37,12 +44,21 @@ export const AuthProvider = ({ children }) => {
       console.log(email, password);
       console.log(auth);
       let isEmailVerified = false;
-      let user = {};
+      let userData = {};
       await signInWithEmailAndPassword(auth, email, password)
-        .then(async (cred) => {
-          console.log(cred);
-          isEmailVerified = await cred?.user?.emailVerified;
-          user = cred?.user;
+        .then(async ({ user }) => {
+          console.log(user);
+          isEmailVerified = await user?.emailVerified;
+          const userID = await user.uid;
+          const userRef = doc(db, 'usuarios', userID);
+          const userDoc = await getDoc(userRef);
+          userData = {
+            uid: user.uid,
+            email: userDoc.data().email,
+            fullName: userDoc.data().fullName,
+            phoneNumber: userDoc.data().phoneNumber,
+            role: userDoc.data().role,
+          };
         });
       if (!isEmailVerified) {
         return ({
@@ -50,7 +66,7 @@ export const AuthProvider = ({ children }) => {
           message: 'No se pudo ingresar. Debe activar su cuenta.',
         });
       } else {
-        setUser(user);
+        setCurrentUser(userData);
         return ({
           ok: true,
           message: 'Ingreso exitoso.',
@@ -68,7 +84,7 @@ export const AuthProvider = ({ children }) => {
   const signOutAuth = async () => {
     try {
       await signOut(auth);
-      setUser(null);
+      setCurrentUser(null);
       return ({
         ok: true,
         message: 'Sesion finalizada.',
@@ -87,7 +103,7 @@ export const AuthProvider = ({ children }) => {
     createAuthUserWithEmailAndPassword,
     loginAuthWithEmailAndPassword,
     signOutAuth,
-    User,
+    currentUser,
   };
 
   return (
