@@ -35,4 +35,21 @@ export const styles = StyleSheet.create({
 
     elevation: 3,
   },
+  ContainerAvatar: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    flexDirection: 'row',
+    flexWrap: 'center',
+    Username: {
+      margin: 2,
+      flex: 1,
+      size: 12,
+    },
+    Avatar: {
+      width: 80,
+      height: 80,
+      borderRadius: 50,
+},
+},
 });
