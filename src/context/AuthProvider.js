@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
         .then(async (cred) => {
           console.log(cred.user);
           await sendEmailVerification(cred?.user);
-          await setDoc(doc, (db, 'usuarios', cred.user.uid), {
+          await setDoc(doc(db, 'usuarios', cred.user.uid), {
             fullName,
             email,
             phoneNumber: phone,
