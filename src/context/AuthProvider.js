@@ -2,9 +2,10 @@ import { useState, createContext, useContext } from 'react';
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification, signInWithEmailAndPassword, signOut,
+  signInWithPopup,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../services/firebase';
+import { auth, db, provider } from '../services/firebase';
 
 const AuthContext = createContext();
 
@@ -12,8 +13,6 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState();
 
   const createAuthUserWithEmailAndPassword = async (email, password, phone, fullName) => {
-    console.log(email, password, phone, fullName);
-    console.log(auth);
     try {
       await createUserWithEmailAndPassword(auth, email, password)
         .then(async (cred) => {
@@ -81,6 +80,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const signInWithGoogle = async () => {
+    const result = await signInWithPopup(auth, provider);
+    console.log(result);
+  };
+
   const signOutAuth = async () => {
     try {
       await signOut(auth);
@@ -102,6 +106,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     createAuthUserWithEmailAndPassword,
     loginAuthWithEmailAndPassword,
+    signInWithGoogle,
     signOutAuth,
     currentUser,
   };
