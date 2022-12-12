@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import {
   Button, Card, Title, Paragraph, TextInput,
 } from 'react-native-paper';
@@ -8,8 +8,10 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { styles } from './styles';
 import { loginSchema } from '../../utils/validationFormLogin';
 import { useAuthContext } from '../../context/AuthProvider';
+import userContext from '../../context/UserProvider';
 
 const Login = ({ navigation }) => {
+  const { setUserData } = useContext(userContext);
   const {
     control, handleSubmit, formState: { errors },
   } = useForm({
@@ -29,9 +31,9 @@ const Login = ({ navigation }) => {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
         // Signed in
-          const user = userCredential;
-          if (user) return navigation.navigate('Home');
-          console.log(user);
+          const { user } = userCredential;
+          setUserData(user.uid);
+          if (user) return navigation.navigate('Beneficios');
         // ...
         })
         .catch((error) => {
@@ -49,7 +51,7 @@ const Login = ({ navigation }) => {
   useEffect(() => {
     if (messages?.ok === true) {
       setTimeout(() => {
-        navigation.navigate('Home');
+        navigation.navigate('Beneficios');
       }, 1000);
     }
   }, [messages]);
