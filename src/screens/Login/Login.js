@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import {
-  View, Text, TextInput, Button, TouchableHighlight,
-} from 'react-native';
+  Button, Card, Title, Paragraph, TextInput,
+} from 'react-native-paper';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { styles } from './styles';
 import { loginSchema } from '../../utils/validationFormLogin';
 import { useAuthContext } from '../../context/AuthProvider';
@@ -11,25 +12,38 @@ import { useAuthContext } from '../../context/AuthProvider';
 const Login = ({ navigation }) => {
   const {
     control, handleSubmit, formState: { errors },
-  } = useForm({ mode: 'all', resolver: yupResolver(loginSchema) });
+  } = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+  const [showPassword, setShowPassword] = useState(false);
 
   const [messages, setMessages] = useState({});
-  const { loginAuthWithEmailAndPassword } = useAuthContext();
 
   const onSubmit = async ({ email, password }) => {
+    console.log(email, password);
     if (email && password) {
-      const response = await loginAuthWithEmailAndPassword(email, password);
-      console.log(response);
-      if (response?.ok === true) {
-        setMessages(response);
-      } else {
-        setMessages(response);
-      }
+      const auth = getAuth();
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+        // Signed in
+          const user = userCredential;
+          if (user) return navigation.navigate('Home');
+          console.log(user);
+        // ...
+        })
+        .catch((error) => {
+          console.log(error);
+          const errorCode = error.code;
+          const errorMessage = error.message;
+        });
     }
   };
 
   const open = () => {
-    // navigation.navigate('PageNotFount');
+    navigation.navigate('Register');
   };
 
   useEffect(() => {
@@ -40,49 +54,65 @@ const Login = ({ navigation }) => {
     }
   }, [messages]);
 
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>¡Bienvenido!</Text>
-      <View>
-        <Controller
-          control={control}
-          name='email'
-          defaultValue=''
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              style={styles.input}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              placeholder='E-mail'
-            />
-          )}
-        />
-        {(errors?.email && errors?.email?.message) && <Text>{errors?.email?.message}.</Text>}
-        <Controller
-          control={control}
-          name='password'
-          defaultValue=''
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              style={styles.input}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              placeholder='Contraseña'
-              autoComplete='off'
-            />
-          )}
-        />
-        {(errors?.password && errors?.password?.message)
-          && <Text>{errors?.password?.message}</Text>}
-        <TouchableHighlight style={styles.touchebleForgot} onPress={open}>
-          <Text style={styles.forgot}>Olvidaste tu contraseña</Text>
-        </TouchableHighlight>
-        {messages.menssage !== '' && <Text>{messages.message}</Text>}
-        <Button color='red' title='Continuar' onPress={handleSubmit(onSubmit)} />
-      </View>
-    </View>
+    <>
+      <Card type='8'>
+        <Card.Content>
+          <Title style={styles.titleLogin}>¡Bienvenido!</Title>
+          <Controller
+            control={control}
+            name='email'
+            defaultValue=''
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={styles.input}
+                type='outlined'
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder='E-mail'
+                error={errors.email}
+              />
+            )}
+          />
+          {(errors?.email && errors?.email?.message)
+            && <Paragraph style={styles.paragraphError}>{errors?.email?.message}.</Paragraph>}
+          <Controller
+            control={control}
+            name='password'
+            defaultValue=''
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={styles.input}
+                type='outlined'
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder='Contraseña'
+                error={errors.password}
+                secureTextEntry={!showPassword}
+                right={showPassword ? <TextInput.Icon icon='eye'
+                  onPress={handleClickShowPassword}
+                /> : <TextInput.Icon icon='eye-off-outline'
+                  onPress={handleClickShowPassword}
+                />}
+              />
+            )}
+          />
+          {(errors?.password && errors?.password?.message)
+            && <Paragraph style={styles.paragraphError}>{errors?.password?.message}</Paragraph>}
+        </Card.Content>
+        <Card.Actions>
+          <Button onPress={open}>Crear cuenta</Button>
+          <Button onPress={handleSubmit(onSubmit)}>Continuar‼</Button>
+        </Card.Actions>
+        {/* {messages && <Notifications title={messages.message} />} */}
+      </Card>
+    </>
   );
 };
 
