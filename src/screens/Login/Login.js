@@ -4,29 +4,41 @@ import {
 } from 'react-native-paper';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { styles } from './styles';
 import { loginSchema } from '../../utils/validationFormLogin';
 import { useAuthContext } from '../../context/AuthProvider';
-import { Notifications } from '../../utils/notifications';
 
 const Login = ({ navigation }) => {
   const {
     control, handleSubmit, formState: { errors },
-  } = useForm({ mode: 'all', resolver: yupResolver(loginSchema) });
+  } = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
   const [showPassword, setShowPassword] = useState(false);
 
   const [messages, setMessages] = useState({});
-  const { loginAuthWithEmailAndPassword } = useAuthContext();
 
   const onSubmit = async ({ email, password }) => {
     console.log(email, password);
     if (email && password) {
-      const response = await loginAuthWithEmailAndPassword(email, password);
-      if (response?.ok === true) {
-        setMessages(response);
-      } else {
-        setMessages(response);
-      }
+      const auth = getAuth();
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+        // Signed in
+          const user = userCredential;
+          if (user) return navigation.navigate('Home');
+          console.log(user);
+        // ...
+        })
+        .catch((error) => {
+          console.log(error);
+          const errorCode = error.code;
+          const errorMessage = error.message;
+        });
     }
   };
 
@@ -63,7 +75,7 @@ const Login = ({ navigation }) => {
                 onChangeText={onChange}
                 value={value}
                 placeholder='E-mail'
-                error={!!errors.email}
+                error={errors.email}
               />
             )}
           />
@@ -81,7 +93,7 @@ const Login = ({ navigation }) => {
                 onChangeText={onChange}
                 value={value}
                 placeholder='Contraseña'
-                error={!!errors.password}
+                error={errors.password}
                 secureTextEntry={!showPassword}
                 right={showPassword ? <TextInput.Icon icon='eye'
                   onPress={handleClickShowPassword}
@@ -98,7 +110,7 @@ const Login = ({ navigation }) => {
           <Button onPress={open}>Crear cuenta</Button>
           <Button onPress={handleSubmit(onSubmit)}>Continuar‼</Button>
         </Card.Actions>
-        {messages && <Notifications title={messages.message} />}
+        {/* {messages && <Notifications title={messages.message} />} */}
       </Card>
     </>
   );
