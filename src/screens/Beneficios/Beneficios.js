@@ -23,7 +23,7 @@ const Beneficios = () => {
   return (
     <>
     {
-      dataBeneficios.map(beneficio => (<CardData key={beneficio.id} {...beneficio} />))
+      dataBeneficios.map(beneficio => (<CardData key={beneficio.id} beneficio={beneficio} />))
     }
     </>
   );

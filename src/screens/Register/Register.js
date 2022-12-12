@@ -37,10 +37,10 @@ const Register = ({ navigation }) => {
       .then(async (userCredential) => {
         // Signed in
         const { user } = userCredential;
+        console.log(user);
+        data.uid = user.uid;
         await addDoc(collection(db, 'usuarios'), data);
         navigation.navigate('Login');
-
-        // ...
       })
       .catch((error) => {
         const errorCode = error.code;
