@@ -1,56 +1,59 @@
+import { useEffect, useState } from 'react';
 import {
   Card, Button, Title, Paragraph, TextInput, Text,
 } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
-import { addDoc, collection } from 'firebase/firestore';
-import { View } from 'react-native';
-import { useState } from 'react';
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { styles } from './styles';
+import { registerSchema } from '../../utils/validationFormLogin';
+import { useAuthContext } from '../../context/AuthProvider';
 import { Notifications } from '../../utils/notifications';
-import { db } from '../../services/firebase';
+import { Separator } from '../../utils/separador';
 
 const Register = ({ navigation }) => {
   const {
     control, handleSubmit, formState: { errors },
-  } = useForm({
-    defaultValues: {
-      firstName: '',
-      email: '',
-      password: '',
-      repeatPassword: '',
-    },
-  });
+  } = useForm({ mode: 'all', resolver: yupResolver(registerSchema) });
 
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState({});
+  const { createAuthUserWithEmailAndPassword } = useAuthContext();
 
-  const handleRegister = async ({ email, password, firstName }) => {
-    console.log(email, password);
-    const auth = getAuth();
-    const data = {
-      activado: true,
-      correo: email,
-      nombre: firstName,
-      rol: 'usuario',
-    };
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        // Signed in
-        const { user } = userCredential;
-        console.log(user);
-        data.uid = user.uid;
-        await addDoc(collection(db, 'usuarios'), data);
-        navigation.navigate('Login');
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // ..
-      });
+  const handleRegister = async (data) => {
+    if (data) {
+      const {
+        email, password, fullName,
+      } = data;
+      const response = await createAuthUserWithEmailAndPassword(email, password, fullName);
+      if (response?.ok === true) {
+        setMessage(response);
+      } else {
+        setMessage(response);
+      }
+    } else {
+      setMessage(
+        {
+          ok: false,
+          message: 'Complete los campos requeridos.',
+        },
+      );
+    }
   };
 
+  useEffect(() => {
+    if (message.ok === true) {
+      setTimeout(() => {
+        navigation.navigate('Login');
+      }, 1000);
+    }
+  }, [message]);
+  /*  const handleGoogle = async () => {
+     const response = await signInWithGoogle();
+     navigation.navigate('Home');
+     console.log(response);
+   }; */
+
   return (
-    <View>
+    <>
       <Card type='8'>
         <Card.Content>
           <Title style={styles.titleRegister}>¡Bienvenido! Crea tu cuenta...</Title>
@@ -58,10 +61,11 @@ const Register = ({ navigation }) => {
           <Text variant='labelLarge'>Nombre y Apellido*</Text>
           <Controller
             control={control}
-            name='firstName'
+            name='fullName'
             defaultValue=''
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
+                type='outlined'
                 style={styles.input}
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -71,7 +75,8 @@ const Register = ({ navigation }) => {
             )}
           />
           {(errors?.fullName && errors?.fullName?.message)
-            && <Paragraph style={styles.paragraphError}>{errors?.fullName?.message}.</Paragraph>}
+            && <Paragraph style={styles.paragraphError}>{errors
+              ?.fullName?.message}.</Paragraph>}
           <Text variant='labelLarge'>Email*</Text>
           <Controller
             control={control}
@@ -80,6 +85,7 @@ const Register = ({ navigation }) => {
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 style={styles.input}
+                type='outlined'
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
@@ -88,7 +94,8 @@ const Register = ({ navigation }) => {
             )}
           />
           {(errors?.email && errors?.email?.message)
-            && <Paragraph style={styles.paragraphError}>{errors?.email?.message}.</Paragraph>}
+            && <Paragraph style={styles.paragraphError}>
+              {errors?.email?.message}.</Paragraph>}
           <Text variant='labelLarge'>Contraseña*</Text>
           <Controller
             control={control}
@@ -96,7 +103,8 @@ const Register = ({ navigation }) => {
             defaultValue=''
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                style={styles.input}
+                 style={styles.input}
+                type='outlined'
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
@@ -105,7 +113,8 @@ const Register = ({ navigation }) => {
             )}
           />
           {(errors?.password && errors?.password?.message)
-            && <Paragraph style={styles.paragraphError}>{errors?.password?.message}.</Paragraph>}
+            && <Paragraph style={styles.paragraphError}>
+              {errors?.password?.message}.</Paragraph>}
           <Text variant='labelLarge'>Confirmar contraseña*</Text>
           <Controller
             control={control}
@@ -114,6 +123,7 @@ const Register = ({ navigation }) => {
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 style={styles.input}
+                type='outlined'
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
@@ -125,13 +135,13 @@ const Register = ({ navigation }) => {
             && <Paragraph style={styles.paragraphError}>
               {errors?.repeatPassword?.message}.</Paragraph>}
         </Card.Content>
+        <Separator />
         <Card.Actions>
           <Button onPress={handleSubmit(handleRegister)}>Registrarme</Button>
         </Card.Actions>
-        {message && <Notifications title={message} />}
       </Card>
-    </View>
-
+      {message?.message && <Notifications title={message.message} on={true} />}
+    </>
   );
 };
 

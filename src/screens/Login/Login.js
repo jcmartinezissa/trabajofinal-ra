@@ -1,46 +1,32 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button, Card, Title, Paragraph, TextInput,
 } from 'react-native-paper';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { styles } from './styles';
 import { loginSchema } from '../../utils/validationFormLogin';
 import { useAuthContext } from '../../context/AuthProvider';
-import userContext from '../../context/UserProvider';
+import { Notifications } from '../../utils/notifications';
+import { Separator } from '../../utils/separador';
 
 const Login = ({ navigation }) => {
-  const { setUserData } = useContext(userContext);
   const {
     control, handleSubmit, formState: { errors },
-  } = useForm({
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
-  const [showPassword, setShowPassword] = useState(false);
+  } = useForm({ mode: 'all', resolver: yupResolver(loginSchema) });
 
+  const [showPassword, setShowPassword] = useState(false);
   const [messages, setMessages] = useState({});
+  const { loginAuthWithEmailAndPassword } = useAuthContext();
 
   const onSubmit = async ({ email, password }) => {
-    console.log(email, password);
     if (email && password) {
-      const auth = getAuth();
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-        // Signed in
-          const { user } = userCredential;
-          setUserData(user.uid);
-          if (user) return navigation.navigate('Beneficios');
-        // ...
-        })
-        .catch((error) => {
-          console.log(error);
-          const errorCode = error.code;
-          const errorMessage = error.message;
-        });
+      const response = await loginAuthWithEmailAndPassword(email, password);
+      if (response?.ok === true) {
+        setMessages(response);
+      } else {
+        setMessages(response);
+      }
     }
   };
 
@@ -49,9 +35,9 @@ const Login = ({ navigation }) => {
   };
 
   useEffect(() => {
-    if (messages?.ok === true) {
+    if (messages.ok === true) {
       setTimeout(() => {
-        navigation.navigate('Beneficios');
+        navigation.navigate('Home');
       }, 1000);
     }
   }, [messages]);
@@ -77,7 +63,7 @@ const Login = ({ navigation }) => {
                 onChangeText={onChange}
                 value={value}
                 placeholder='E-mail'
-                error={errors.email}
+                error={!!errors.email}
               />
             )}
           />
@@ -95,7 +81,7 @@ const Login = ({ navigation }) => {
                 onChangeText={onChange}
                 value={value}
                 placeholder='Contraseña'
-                error={errors.password}
+                error={!!errors.password}
                 secureTextEntry={!showPassword}
                 right={showPassword ? <TextInput.Icon icon='eye'
                   onPress={handleClickShowPassword}
@@ -108,12 +94,13 @@ const Login = ({ navigation }) => {
           {(errors?.password && errors?.password?.message)
             && <Paragraph style={styles.paragraphError}>{errors?.password?.message}</Paragraph>}
         </Card.Content>
+        <Separator />
         <Card.Actions>
-          <Button onPress={open}>Crear cuenta</Button>
-          <Button onPress={handleSubmit(onSubmit)}>Continuar‼</Button>
+          <Button onPress={open}>No tienes cuenta ➡Crear cuenta</Button>
+          <Button onPress={handleSubmit(onSubmit)}>Continua</Button>
         </Card.Actions>
-        {/* {messages && <Notifications title={messages.message} />} */}
       </Card>
+      {messages?.message && <Notifications title={messages.message} on={true} />}
     </>
   );
 };
