@@ -32,6 +32,7 @@ const Login = ({ navigation }) => {
         .then((userCredential) => {
         // Signed in
           const { user } = userCredential;
+          console.log(user);
           setUserData(user.uid);
           if (user) return navigation.navigate('Beneficios');
         // ...
