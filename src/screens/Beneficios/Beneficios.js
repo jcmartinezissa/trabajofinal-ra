@@ -7,6 +7,7 @@ import { db } from '../../services/firebase';
 
 const Beneficios = () => {
   const [dataBeneficios, setDataBeneficios] = useState([]);
+  console.log(dataBeneficios);
   const getBeneficios = async () => {
     const { docs } = await getDocs(collection(db, 'beneficios'));
     const beneficiosMapped = docs.map(beneficio => {
