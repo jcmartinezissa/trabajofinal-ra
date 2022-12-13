@@ -11,18 +11,14 @@ const CardData = ({ beneficio }) => {
   const { userData } = useContext(userContext);
   const [isChange, setIsChange] = useState(false);
   const isChangeBeneficios = beneficio.usuarios.map(date => date.date);
-  console.log(isChangeBeneficios);
-  console.log(beneficio);
   useEffect(() => {
     const dataChange = beneficio?.usuarios?.find(element => element.userData === userData);
-    console.log(dataChange);
     if (dataChange) {
       setIsChange(dataChange);
     }
   }, [isChange]);
 
   const getBeneficio = async (data) => {
-    console.log(data);
     const date = new Date();
     const dataUpdate = doc(db, 'beneficios', beneficio.id);
     const { usuarios } = beneficio;
