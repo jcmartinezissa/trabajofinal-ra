@@ -9,20 +9,16 @@ import { db } from '../../services/firebase';
 
 const Beneficios = () => {
   const [dataBeneficios, setDataBeneficios] = useState([]);
-  console.log(dataBeneficios);
   const [userRol, setUserRol] = useState({});
-  console.log(userRol.rol);
   const { userData } = useContext(userContext);
-  console.log(userData);
-  const getDataLogin = async () => {
+
+  const getBeneficios = async () => {
     const q = query(collection(db, 'usuarios'), where('uid', '==', userData));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       // doc.data() is never undefined for query doc snapshots
       setUserRol(doc.data());
     });
-  };
-  const getBeneficios = async () => {
     const { docs } = await getDocs(collection(db, 'beneficios'));
     const beneficiosMapped = docs.map(beneficio => {
       return {
@@ -31,15 +27,16 @@ const Beneficios = () => {
       };
     });
     if (userRol.rol === 'usuario') {
-      setDataBeneficios(beneficiosMapped);
+      const dataFilter = dataBeneficios.filter(beneficio => beneficio.staff === false);
+      setDataBeneficios(dataFilter);
     } else {
-      setDataBeneficios(beneficiosMapped?.filter(beneficio => beneficio.staff === false));
+      setDataBeneficios(beneficiosMapped);
     }
   };
+
   useEffect(() => {
-    getDataLogin();
-    if (userRol) getBeneficios();
-  }, []);
+    getBeneficios();
+  }, [dataBeneficios]);
   return (
     <>
     {
