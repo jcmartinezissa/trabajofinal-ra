@@ -19,7 +19,4 @@ export const styles = StyleSheet.create({
     marginTop: 5,
     padding: 10,
   },
-  // paragraphError: {
-  //   color: '#E0313D',
-  // },
 });

@@ -37,7 +37,7 @@ const Login = ({ navigation }) => {
   useEffect(() => {
     if (messages.ok === true) {
       setTimeout(() => {
-        navigation.navigate('Home');
+        navigation.navigate('Beneficios');
       }, 1000);
     }
   }, [messages]);

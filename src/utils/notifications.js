@@ -7,8 +7,7 @@ import {
 const styles = StyleSheet.create({
   titleNoty: {
     margin: 'auto',
-    fontSize: 20,
-    fontWeight: 'bold',
+    /* fontSize: 20, */
   },
   cardAction: {
     paddingBottom: 0,

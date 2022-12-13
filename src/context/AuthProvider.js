@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
         message: 'Usuario registrado con exito. Valide su email para activar la cuenta.',
       });
     } catch (error) {
+      console.log(error);
       return ({
         ok: false,
         message: 'Error al intentar registrar.',
