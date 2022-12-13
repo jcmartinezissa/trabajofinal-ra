@@ -1,37 +1,32 @@
 import { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import {
   Button, Paragraph, Dialog, Portal, Provider,
 } from 'react-native-paper';
 
-const styles = StyleSheet.create({
-  titleNoty: {
-    margin: 'auto',
-    /* fontSize: 20, */
-  },
-  cardAction: {
-    paddingBottom: 0,
-    marginTop: 0,
-  },
-});
+export const Notifications = ({ title }) => {
+  console.log(title);
+  const [visible, setVisible] = useState(false);
 
-export const Notifications = ({ title, on }) => {
-  const [visible, setVisible] = useState(on);
+  // const showDialog = () => setVisible(true);
+
   const hideDialog = () => setVisible(false);
 
   return (
     <Provider>
       <View>
+        {/* <Button onPress={showDialog}>Show Dialog</Button> */}
         <Portal>
           <Dialog
-            visible={visible}
+            // visible={true}
             onDismiss={hideDialog}>
-            <Dialog.Actions style={styles.cardAction}>
-              <Button onPress={hideDialog}>X</Button>
-            </Dialog.Actions>
+            <Dialog.Title>Alert</Dialog.Title>
             <Dialog.Content>
-              <Paragraph style={styles.titleNoty}>{title}</Paragraph>
+              <Paragraph>{title}</Paragraph>
             </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={hideDialog}>Done</Button>
+            </Dialog.Actions>
           </Dialog>
         </Portal>
       </View>

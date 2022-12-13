@@ -12,17 +12,17 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState();
 
-  const createAuthUserWithEmailAndPassword = async (email, password, fullName) => {
+  const createAuthUserWithEmailAndPassword = async (email, password, phone, fullName) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password)
         .then(async (cred) => {
           console.log(cred.user);
           await sendEmailVerification(cred?.user);
           await setDoc(doc(db, 'usuarios', cred.user.uid), {
-            nombre: fullName,
-            correo: email,
+            fullName,
+            email,
+            phoneNumber: phone,
             rol: 'usuario',
-            activo: 'true',
           });
         });
       return ({
@@ -30,7 +30,6 @@ export const AuthProvider = ({ children }) => {
         message: 'Usuario registrado con exito. Valide su email para activar la cuenta.',
       });
     } catch (error) {
-      console.log(error);
       return ({
         ok: false,
         message: 'Error al intentar registrar.',
@@ -41,6 +40,8 @@ export const AuthProvider = ({ children }) => {
 
   const loginAuthWithEmailAndPassword = async (email, password) => {
     try {
+      console.log(email, password);
+      console.log(auth);
       let isEmailVerified = false;
       let userData = {};
       await signInWithEmailAndPassword(auth, email, password)
@@ -52,10 +53,10 @@ export const AuthProvider = ({ children }) => {
           const userDoc = await getDoc(userRef);
           userData = {
             uid: user.uid,
-            correo: userDoc.data().email,
-            nombre: userDoc.data().fullName,
-            rol: userDoc.data().role,
-            activo: userDoc.data().true,
+            email: userDoc.data().email,
+            fullName: userDoc.data().fullName,
+            phoneNumber: userDoc.data().phoneNumber,
+            role: userDoc.data().role,
           };
         });
       if (!isEmailVerified) {
@@ -71,10 +72,9 @@ export const AuthProvider = ({ children }) => {
         });
       }
     } catch (error) {
-      console.log(error);
       return ({
         ok: false,
-        message: 'Email o contraseña incorrecta',
+        message: 'Error al ingresar',
         error,
       });
     }
@@ -94,6 +94,7 @@ export const AuthProvider = ({ children }) => {
         message: 'Sesion finalizada.',
       });
     } catch (error) {
+      console.error(error);
       return ({
         ok: false,
         message: 'Error al cerrar sesion.',

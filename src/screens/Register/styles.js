@@ -8,10 +8,6 @@ export const styles = StyleSheet.create({
   paragraphRegister: {
     marginBottom: 20,
     marginTop: 0,
-
-  },
-  paragraphError: {
-    color: '#E0313D',
   },
   input: {
     height: 40,
@@ -19,4 +15,7 @@ export const styles = StyleSheet.create({
     marginTop: 5,
     padding: 10,
   },
+  // paragraphError: {
+  //   color: '#E0313D',
+  // },
 });

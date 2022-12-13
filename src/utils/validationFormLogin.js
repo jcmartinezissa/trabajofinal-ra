@@ -18,6 +18,9 @@ export const registerSchema = Yup.object().shape({
   email: Yup.string()
     .required('Campo obligatorio.')
     .email('Debe ingresar un mail valido.'),
+  phone: Yup.string()
+    .required('Campo obligatorio.')
+    .min(10, 'Debe ingresar diez numeros.'),
   password: Yup.string()
     .required('Campo obligatorio.')
     .min(7, 'Debe ingresar una contraseña mas larga.'),
