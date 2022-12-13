@@ -103,7 +103,7 @@ const Register = ({ navigation }) => {
             defaultValue=''
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                // style={styles.input}
+                 style={styles.input}
                 type='outlined'
                 onBlur={onBlur}
                 onChangeText={onChange}
