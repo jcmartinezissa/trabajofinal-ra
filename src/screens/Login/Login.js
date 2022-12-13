@@ -8,18 +8,18 @@ import { styles } from './styles';
 import { loginSchema } from '../../utils/validationFormLogin';
 import { useAuthContext } from '../../context/AuthProvider';
 import { Notifications } from '../../utils/notifications';
+import { Separator } from '../../utils/separador';
 
 const Login = ({ navigation }) => {
   const {
     control, handleSubmit, formState: { errors },
   } = useForm({ mode: 'all', resolver: yupResolver(loginSchema) });
-  const [showPassword, setShowPassword] = useState(false);
 
+  const [showPassword, setShowPassword] = useState(false);
   const [messages, setMessages] = useState({});
   const { loginAuthWithEmailAndPassword } = useAuthContext();
 
   const onSubmit = async ({ email, password }) => {
-    console.log(email, password);
     if (email && password) {
       const response = await loginAuthWithEmailAndPassword(email, password);
       if (response?.ok === true) {
@@ -35,7 +35,7 @@ const Login = ({ navigation }) => {
   };
 
   useEffect(() => {
-    if (messages?.ok === true) {
+    if (messages.ok === true) {
       setTimeout(() => {
         navigation.navigate('Home');
       }, 1000);
@@ -94,12 +94,13 @@ const Login = ({ navigation }) => {
           {(errors?.password && errors?.password?.message)
             && <Paragraph style={styles.paragraphError}>{errors?.password?.message}</Paragraph>}
         </Card.Content>
+        <Separator />
         <Card.Actions>
-          <Button onPress={open}>Crear cuenta</Button>
-          <Button onPress={handleSubmit(onSubmit)}>Continuar‼</Button>
+          <Button onPress={open}>No tienes cuenta ➡Crear cuenta</Button>
+          <Button onPress={handleSubmit(onSubmit)}>Continua</Button>
         </Card.Actions>
-        {messages && <Notifications title={messages.message} />}
       </Card>
+      {messages?.message && <Notifications title={messages.message} on={true} />}
     </>
   );
 };
